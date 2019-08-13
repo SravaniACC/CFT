@@ -1,0 +1,72 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Creates two Subnets, a DBSubnetGroup, an EC2 instance and a RDS instance.'
+Parameters:
+  KeyName:
+    Description: 'Name of an existing EC2 KeyPair to enable SSH access to the instance'
+    Type: 'AWS::EC2::KeyPair::KeyName'
+    ConstraintDescription: 'must be the name of an existing EC2 KeyPair'
+  EC2SecurityGroup:
+    Description: SecurityGroups
+    Type: 'List<AWS::EC2::SecurityGroup::Id>'
+  EC2AZ:
+    Description: AZ
+    Type: String
+  ImagId:
+    Description: Image
+    Type: String
+  SubnetId1:
+    Description: SubnetId
+    Type: String
+  VpcId:
+    Description: VpcId
+    Type: String
+Resources:
+  mySubnet1:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      AvailabilityZone: !Ref EC2AZ
+      VpcId: !Ref VpcId
+  mySubnet2:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      AvailabilityZone: !Ref EC2AZ
+      VpcId: !Ref VpcId
+  mydbsubnetgroup:
+    Type: 'AWS::RDS::DBSubnetGroup'
+    Properties:
+      DBSubnetGroupName: dbsubnetgroup
+      DBSubnetGroupDescription: description
+      SubnetIds:
+        - !Ref SubnetId1
+  InstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref VpcId
+      GroupDescription: 'Enable SSH access via port 22'
+      SecurityGroupIngress:
+        -
+          CidrIp: 10.0.0.0/16
+          Description: 'Allowed from anywhere'
+          FromPort: '22'
+          ToPort: '22'
+          IpProtocol: tcp
+  EC2Instance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: !Ref ImagId
+      InstanceType: t2.micro
+      SecurityGroupIds:
+        - !Ref EC2SecurityGroup
+      KeyName: !Ref KeyName
+      SubnetId: !Ref SubnetId1
+  RDSInstance:
+    Type: 'AWS::RDS::DBInstance'
+    Properties:
+      AllocatedStorage: '100'
+      DBInstanceClass: db.t2.micro
+      Engine: MySQL
+      Iops: '1000'
+      MasterUsername: admin
+      MasterUserPassword: admin123
+      DBSubnetGroupName: dbsubnetgroup
+    DependsOn: mydbsubnetgroup

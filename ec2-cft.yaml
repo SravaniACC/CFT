@@ -1,0 +1,38 @@
+Parameters:
+  InstanceType:
+    Description: Ec2 instance Type
+    Type: String
+    Default: t2.micro
+    ConstraintDescription: must be a valid ec2 instance
+  KeyName:
+    Description: Name of an existing key pair
+    Type: 'AWS::EC2::KeyPair::KeyName'
+    ConstraintDescription: must be name of an existing EC2 KeyPair
+  EC2SecurityGroup:
+    Description: SecurityGroups
+    Type: 'List<AWS::EC2::SecurityGroup::Id>'
+  EC2AZ:
+    Description: AZ
+    Type: String
+  ImagId:
+     Description: Image
+     Type: String
+  SubnetId1:
+     Description: SubnetId
+     Type: String
+
+Resources:
+  EC2InstancePrimary:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+       ImageId: !Ref ImagId
+       AvailabilityZone: !Ref EC2AZ
+       InstanceType: !Ref InstanceType
+       KeyName: !Ref KeyName
+       NetworkInterfaces:
+       - AssociatePublicIpAddress: false
+         DeviceIndex: 0
+         DeleteOnTermination: true
+         SubnetId: !Ref SubnetId1
+         GroupSet: !Ref EC2SecurityGroup
+       

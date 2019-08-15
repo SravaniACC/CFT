@@ -1,0 +1,21 @@
+Parameters:
+  EnvironmentName:
+   Type : String
+  
+  VpcCIDR:
+   Type: String
+   Default: 10.0.0.0/16
+
+Resources:
+  VPC:
+   Type: AWS::EC2::VPC
+   Properties:
+     CidrBlock: !Ref VpcCIDR
+     EnableDnsSupport: True
+    
+   
+
+    
+
+
+

@@ -1,0 +1,9 @@
+UserData: !Base64
+        'Fn::Join':
+          - ''
+          - - |
+              #!/bin/bash
+               sudo yum update -y
+               sudo yum install httpd -y
+               service httpd start
+               chconfig httpd on
